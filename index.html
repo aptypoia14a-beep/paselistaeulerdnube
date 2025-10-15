@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Asistencia Escolar</title>
+    <title>Sistema de Asistencia - Colegio Leonard Eulerd</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0A6EB4 0%, #0859A0 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -27,8 +27,25 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #0A6EB4;
+        }
+
+        .logo {
+            max-width: 300px;
+            margin: 0 auto 20px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: auto;
+        }
+        
         h1 {
-            color: #667eea;
+            color: #0A6EB4;
             text-align: center;
             margin-bottom: 10px;
             font-size: 2.5em;
@@ -36,8 +53,17 @@
         
         .subtitle {
             text-align: center;
-            color: #666;
-            margin-bottom: 20px;
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .motto {
+            text-align: center;
+            color: #0A6EB4;
+            font-weight: bold;
+            font-size: 1.2em;
+            font-style: italic;
         }
 
         .cloud-status {
@@ -64,6 +90,7 @@
             gap: 10px;
             margin-bottom: 30px;
             border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
         }
         
         .tab {
@@ -78,9 +105,13 @@
         }
         
         .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+            color: #0A6EB4;
+            border-bottom-color: #0A6EB4;
             font-weight: bold;
+        }
+
+        .tab:hover {
+            color: #0A6EB4;
         }
         
         .tab-content {
@@ -130,14 +161,14 @@
         }
         
         .btn-primary {
-            background: #667eea;
+            background: #0A6EB4;
             color: white;
         }
         
         .btn-primary:hover {
-            background: #5568d3;
+            background: #0859A0;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(10, 110, 180, 0.4);
         }
         
         .btn-success {
@@ -189,7 +220,7 @@
         
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #0A6EB4;
         }
         
         .students-grid {
@@ -203,7 +234,7 @@
             background: #f8f9fa;
             padding: 15px;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #0A6EB4;
         }
         
         .student-card h3 {
@@ -229,7 +260,7 @@
         }
         
         table th {
-            background: #667eea;
+            background: #0A6EB4;
             color: white;
             font-weight: bold;
         }
@@ -251,7 +282,7 @@
         }
         
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0A6EB4 0%, #0859A0 100%);
             padding: 20px;
             border-radius: 10px;
             color: white;
@@ -285,7 +316,7 @@
 
         .backup-section {
             background: #e3f2fd;
-            border: 2px solid #2196f3;
+            border: 2px solid #0A6EB4;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
@@ -296,7 +327,7 @@
             padding: 15px;
             border-radius: 8px;
             margin: 15px 0;
-            border-left: 4px solid #2196f3;
+            border-left: 4px solid #0A6EB4;
         }
 
         .file-input-wrapper {
@@ -312,7 +343,7 @@
 
         .file-input-label {
             padding: 12px 30px;
-            background: #2196f3;
+            background: #0A6EB4;
             color: white;
             border-radius: 8px;
             cursor: pointer;
@@ -322,15 +353,40 @@
         }
 
         .file-input-label:hover {
-            background: #1976d2;
+            background: #0859A0;
             transform: translateY(-2px);
+        }
+
+        .scanner-box {
+            background: linear-gradient(135deg, #0A6EB4 0%, #0859A0 100%);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .scanner-box h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .scanner-box p {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📱 Sistema de Asistencia</h1>
-        <p class="subtitle">Control de entrada y salida con QR/Código de Barras - ☁️ Sincronizado con Google Sheets</p>
+        <div class="header">
+            <div class="logo">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 400'%3E%3Crect width='800' height='400' fill='%230A6EB4'/%3E%3Ctext x='400' y='150' font-family='Arial' font-size='60' font-weight='bold' fill='white' text-anchor='middle'%3ECOLEGIO%3C/text%3E%3Ctext x='400' y='220' font-family='Arial' font-size='80' font-weight='bold' fill='white' text-anchor='middle'%3ELEONARD%3C/text%3E%3Ctext x='400' y='290' font-family='Arial' font-size='80' font-weight='bold' fill='white' text-anchor='middle'%3EEULERD%3C/text%3E%3C/svg%3E" alt="Colegio Leonard Eulerd">
+            </div>
+            <h1>📱 Sistema de Asistencia</h1>
+            <p class="subtitle">Control de entrada y salida con QR/Código de Barras</p>
+            <p class="motto">Estudia y Vencerás</p>
+        </div>
         
         <div id="cloudStatus" class="cloud-status disconnected">
             ⚠️ No conectado a Google Sheets - Usando almacenamiento local
@@ -375,7 +431,7 @@
             
             <div id="configStatus"></div>
 
-            <!-- NUEVA SECCIÓN DE RESPALDO LOCAL -->
+            <!-- SECCIÓN DE RESPALDO LOCAL -->
             <h2 style="margin-top: 40px;">💾 Respaldo Local de Datos</h2>
             
             <div class="backup-section">
@@ -414,9 +470,9 @@
                 </select>
             </div>
             
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 15px; text-align: center; margin: 30px 0;">
-                <h2 style="color: white; margin-bottom: 20px;">🔍 Escáner Bluetooth Activo</h2>
-                <p style="color: white; font-size: 18px; margin-bottom: 20px;">Escanee el código QR o código de barras del alumno</p>
+            <div class="scanner-box">
+                <h2>🔍 Escáner Bluetooth Activo</h2>
+                <p>Escanee el código QR o código de barras del alumno</p>
                 
                 <div class="form-group" style="max-width: 500px; margin: 0 auto;">
                     <input 
@@ -428,7 +484,7 @@
                         autofocus>
                 </div>
                 
-                <p style="color: white; margin-top: 15px; opacity: 0.9;">
+                <p style="margin-top: 15px; opacity: 0.9;">
                     ⚡ El código se procesará automáticamente después del escaneo
                 </p>
             </div>
@@ -523,7 +579,7 @@
             updateBackupInfo();
         };
 
-        // ========== NUEVAS FUNCIONES DE RESPALDO LOCAL ==========
+        // ========== FUNCIONES DE RESPALDO LOCAL ==========
 
         function updateBackupInfo() {
             document.getElementById('totalStudents').textContent = students.length;
@@ -611,13 +667,11 @@
                 try {
                     const backupData = JSON.parse(e.target.result);
                     
-                    // Validar estructura del archivo
                     if (!backupData.version) {
                         showBackupStatus('❌ Archivo inválido: no es un respaldo válido', 'error');
                         return;
                     }
                     
-                    // Preguntar antes de sobrescribir
                     const hasData = students.length > 0 || attendanceRecords.length > 0;
                     if (hasData) {
                         const confirmImport = confirm(
@@ -638,7 +692,6 @@
                         }
                     }
                     
-                    // Importar datos
                     if (backupData.students) {
                         students = backupData.students;
                     }
@@ -653,10 +706,7 @@
                         document.getElementById('webAppUrl').value = webAppUrl;
                     }
                     
-                    // Guardar en localStorage
                     saveData();
-                    
-                    // Actualizar vistas
                     displayStudents();
                     displayRecords();
                     updateBackupInfo();
@@ -674,7 +724,6 @@
                     showBackupStatus('❌ Error al leer el archivo: ' + error.message, 'error');
                 }
                 
-                // Limpiar input
                 event.target.value = '';
             };
             
@@ -779,13 +828,11 @@
             showConfigStatus('🔄 Sincronizando...', 'info');
             
             try {
-                // Sincronizar alumnos
                 await saveToCloud('saveStudents', {
                     action: 'saveStudents',
                     students: students
                 });
                 
-                // Sincronizar registros (uno por uno)
                 for (const record of attendanceRecords) {
                     await saveToCloud('saveRecord', {
                         action: 'saveRecord',
@@ -809,7 +856,6 @@
             showConfigStatus('🔄 Cargando desde la nube...', 'info');
             
             try {
-                // Cargar alumnos
                 const studentsResponse = await fetch(webAppUrl + '?action=getStudents');
                 const studentsData = await studentsResponse.json();
                 
@@ -817,7 +863,6 @@
                     students = studentsData.students;
                 }
                 
-                // Cargar registros
                 const recordsResponse = await fetch(webAppUrl + '?action=getRecords');
                 const recordsData = await recordsResponse.json();
                 
@@ -843,7 +888,7 @@
             statusDiv.style.display = 'block';
         }
 
-        // ========== FUNCIONES ORIGINALES ==========
+        // ========== FUNCIONES PRINCIPALES ==========
 
         function setupBluetoothScanner() {
             const scannerInput = document.getElementById('bluetoothScanner');
@@ -959,7 +1004,6 @@
             attendanceRecords.push(record);
             saveData();
             
-            // Guardar en la nube
             if (isCloudConnected) {
                 const cloudSuccess = await saveToCloud('saveRecord', {
                     action: 'saveRecord',
@@ -1004,7 +1048,6 @@
             students.push({ name, code, grade });
             saveData();
             
-            // Guardar en la nube
             if (isCloudConnected) {
                 await saveToCloud('saveStudents', {
                     action: 'saveStudents',
@@ -1044,7 +1087,6 @@
             
             saveData();
             
-            // Guardar en la nube
             if (isCloudConnected) {
                 await saveToCloud('saveStudents', {
                     action: 'saveStudents',
@@ -1078,7 +1120,6 @@
                 students.splice(index, 1);
                 saveData();
                 
-                // Actualizar en la nube
                 if (isCloudConnected) {
                     await saveToCloud('saveStudents', {
                         action: 'saveStudents',
@@ -1106,7 +1147,6 @@
                 return;
             }
             
-            // Agrupar registros por alumno y fecha
             const groupedRecords = {};
             
             filtered.forEach(record => {
@@ -1130,7 +1170,6 @@
                 }
             });
             
-            // Convertir a array y ordenar por timestamp (más reciente primero)
             const sortedRecords = Object.values(groupedRecords).sort((a, b) => b.timestamp - a.timestamp);
             
             container.innerHTML = `
@@ -1175,7 +1214,6 @@
                 return;
             }
             
-            // Agrupar registros por alumno y fecha
             const groupedRecords = {};
             
             attendanceRecords.forEach(record => {
@@ -1206,7 +1244,7 @@
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `asistencia_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute('download', `asistencia_leonardeulerd_${new Date().toISOString().split('T')[0]}.csv`);
             link.click();
         }
 
