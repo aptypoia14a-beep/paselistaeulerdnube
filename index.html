@@ -505,24 +505,44 @@
         <div id="students" class="tab-content">
             <h2>Gestión de Alumnos</h2>
             
+            <div class="backup-section">
+                <h3>📥 Importar Lista de Alumnos desde CSV</h3>
+                <p>El archivo CSV debe contener: Nombre | CURP | Semestre | Grupo</p>
+                
+                <div class="actions">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="csvStudentsInput" accept=".csv" onchange="importStudentsCSV(event)">
+                        <label for="csvStudentsInput" class="file-input-label">📤 Seleccionar Archivo CSV</label>
+                    </div>
+                </div>
+                
+                <div id="importStudentsStatus"></div>
+            </div>
+
+            <h3 style="margin-top: 30px;">➕ Agregar Alumno Manualmente</h3>
+            
             <div class="form-group">
                 <label>Nombre del Alumno:</label>
-                <input type="text" id="studentName" placeholder="Ej: Juan Pérez">
+                <input type="text" id="studentName" placeholder="Ej: Juan Pérez García">
             </div>
             
             <div class="form-group">
-                <label>Código QR/Barras:</label>
-                <input type="text" id="studentCode" placeholder="Ej: ALU001">
+                <label>CURP:</label>
+                <input type="text" id="studentCURP" placeholder="Ej: PEGJ950101HDFRRL09" maxlength="18">
             </div>
             
             <div class="form-group">
-                <label>Grado:</label>
-                <input type="text" id="studentGrade" placeholder="Ej: 5to Grado">
+                <label>Semestre:</label>
+                <input type="text" id="studentSemester" placeholder="Ej: 3">
+            </div>
+            
+            <div class="form-group">
+                <label>Grupo:</label>
+                <input type="text" id="studentGroup" placeholder="Ej: A">
             </div>
             
             <div class="actions">
                 <button class="btn btn-primary" onclick="addStudent()">➕ Agregar Alumno</button>
-                <button class="btn btn-success" onclick="generateSampleStudents()">🎲 Generar 30 Alumnos de Ejemplo</button>
             </div>
             
             <div id="studentsList" class="students-grid"></div>
@@ -1030,22 +1050,156 @@
             statusDiv.style.display = 'block';
         }
 
+        // ========== IMPORTAR ALUMNOS DESDE CSV ==========
+
+        function importStudentsCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csvContent = e.target.result;
+                    const lines = csvContent.split('\n');
+                    
+                    if (lines.length < 2) {
+                        showImportStudentsStatus('❌ El archivo está vacío o no contiene datos', 'error');
+                        return;
+                    }
+                    
+                    // Confirmar antes de importar si hay alumnos
+                    if (students.length > 0) {
+                        const confirm = window.confirm(
+                            `⚠️ Ya hay ${students.length} alumnos registrados.\n\n` +
+                            '¿Desea agregar los nuevos alumnos a la lista existente?\n\n' +
+                            'Presione OK para agregar o Cancelar para reemplazar todos los alumnos.'
+                        );
+                        
+                        if (!confirm) {
+                            const confirmReplace = window.confirm(
+                                '⚠️ ADVERTENCIA: Esto eliminará todos los alumnos actuales.\n\n¿Está seguro?'
+                            );
+                            
+                            if (confirmReplace) {
+                                students = [];
+                            } else {
+                                event.target.value = '';
+                                return;
+                            }
+                        }
+                    }
+                    
+                    let importedCount = 0;
+                    let skippedCount = 0;
+                    let errorCount = 0;
+                    
+                    // Procesar cada línea (saltando el encabezado si existe)
+                    const startLine = lines[0].toLowerCase().includes('nombre') || 
+                                     lines[0].toLowerCase().includes('curp') ? 1 : 0;
+                    
+                    for (let i = startLine; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+                        
+                        // Dividir por coma, pero considerar comas dentro de comillas
+                        const columns = line.split(',').map(col => col.trim().replace(/^"|"$/g, ''));
+                        
+                        if (columns.length < 4) {
+                            errorCount++;
+                            continue;
+                        }
+                        
+                        const name = columns[0];
+                        const curp = columns[1].toUpperCase();
+                        const semester = columns[2];
+                        const group = columns[3];
+                        
+                        // Validar que tenga nombre y CURP
+                        if (!name || !curp) {
+                            errorCount++;
+                            continue;
+                        }
+                        
+                        // Verificar si el CURP ya existe
+                        if (students.find(s => s.code === curp)) {
+                            skippedCount++;
+                            continue;
+                        }
+                        
+                        // Agregar alumno
+                        students.push({
+                            name: name,
+                            code: curp,
+                            curp: curp,
+                            semester: semester,
+                            group: group,
+                            grade: `${semester}° ${group}`
+                        });
+                        
+                        importedCount++;
+                    }
+                    
+                    saveData();
+                    displayStudents();
+                    
+                    let message = `✅ Importación completada:\n`;
+                    message += `✔️ ${importedCount} alumnos importados\n`;
+                    if (skippedCount > 0) message += `⚠️ ${skippedCount} alumnos duplicados (omitidos)\n`;
+                    if (errorCount > 0) message += `❌ ${errorCount} líneas con errores`;
+                    
+                    showImportStudentsStatus(message, importedCount > 0 ? 'success' : 'error');
+                    
+                } catch (error) {
+                    showImportStudentsStatus('❌ Error al procesar el archivo: ' + error.message, 'error');
+                }
+                
+                event.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function showImportStudentsStatus(message, type) {
+            const statusDiv = document.getElementById('importStudentsStatus');
+            statusDiv.className = 'status-box ' + type;
+            statusDiv.innerHTML = message.replace(/\n/g, '<br>');
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 7000);
+        }
+
         async function addStudent() {
             const name = document.getElementById('studentName').value.trim();
-            const code = document.getElementById('studentCode').value.trim();
-            const grade = document.getElementById('studentGrade').value.trim();
+            const curp = document.getElementById('studentCURP').value.trim().toUpperCase();
+            const semester = document.getElementById('studentSemester').value.trim();
+            const group = document.getElementById('studentGroup').value.trim();
             
-            if (!name || !code) {
-                alert('Por favor complete nombre y código');
+            if (!name || !curp) {
+                alert('Por favor complete nombre y CURP');
                 return;
             }
             
-            if (students.find(s => s.code === code)) {
-                alert('Ya existe un alumno con ese código');
+            // Validar longitud del CURP (18 caracteres)
+            if (curp.length !== 18) {
+                alert('El CURP debe tener exactamente 18 caracteres');
                 return;
             }
             
-            students.push({ name, code, grade });
+            if (students.find(s => s.code === curp)) {
+                alert('Ya existe un alumno con ese CURP');
+                return;
+            }
+            
+            students.push({ 
+                name, 
+                code: curp,
+                curp: curp,
+                semester: semester,
+                group: group,
+                grade: `${semester}° ${group}`
+            });
             saveData();
             
             if (isCloudConnected) {
@@ -1056,46 +1210,12 @@
             }
             
             document.getElementById('studentName').value = '';
-            document.getElementById('studentCode').value = '';
-            document.getElementById('studentGrade').value = '';
+            document.getElementById('studentCURP').value = '';
+            document.getElementById('studentSemester').value = '';
+            document.getElementById('studentGroup').value = '';
             
             displayStudents();
             alert('Alumno agregado exitosamente');
-        }
-
-        async function generateSampleStudents() {
-            if (students.length > 0) {
-                if (!confirm('Esto eliminará los alumnos actuales. ¿Continuar?')) return;
-            }
-            
-            students = [];
-            const nombres = ['Juan', 'María', 'Pedro', 'Ana', 'Luis', 'Carmen', 'José', 'Laura', 'Carlos', 'Sofía'];
-            const apellidos = ['García', 'Rodríguez', 'Martínez', 'López', 'González', 'Pérez', 'Sánchez', 'Ramírez', 'Torres', 'Flores'];
-            const grados = ['1ero A', '1ero B', '2do A', '2do B', '3ero A'];
-            
-            for (let i = 1; i <= 30; i++) {
-                const nombre = nombres[Math.floor(Math.random() * nombres.length)];
-                const apellido = apellidos[Math.floor(Math.random() * apellidos.length)];
-                const grado = grados[Math.floor(Math.random() * grados.length)];
-                
-                students.push({
-                    name: `${nombre} ${apellido} ${i}`,
-                    code: `ALU${String(i).padStart(3, '0')}`,
-                    grade: grado
-                });
-            }
-            
-            saveData();
-            
-            if (isCloudConnected) {
-                await saveToCloud('saveStudents', {
-                    action: 'saveStudents',
-                    students: students
-                });
-            }
-            
-            displayStudents();
-            alert('30 alumnos generados exitosamente');
         }
 
         function displayStudents() {
@@ -1108,8 +1228,9 @@
             container.innerHTML = students.map((student, index) => `
                 <div class="student-card">
                     <h3>${student.name}</h3>
-                    <p><strong>Código:</strong> ${student.code}</p>
-                    <p><strong>Grado:</strong> ${student.grade}</p>
+                    <p><strong>CURP:</strong> ${student.curp || student.code}</p>
+                    <p><strong>Semestre:</strong> ${student.semester || 'N/A'}</p>
+                    <p><strong>Grupo:</strong> ${student.group || 'N/A'}</p>
                     <button class="btn btn-danger" onclick="deleteStudent(${index})" style="width: 100%; margin-top: 10px;">Eliminar</button>
                 </div>
             `).join('');
