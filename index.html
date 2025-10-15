@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Asistencia - Cloud</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .config-panel {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .config-panel h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .status-box {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .status-box.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .status-box.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .status-box.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .student-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .student-card h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .student-card p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        
+        table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .scanner-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .scanner-box h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .manual-entry {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .code-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .help-text {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☁️ Sistema de Asistencia Cloud</h1>
+        <p class="subtitle">Datos almacenados en Google Sheets</p>
+
+        <!-- Panel de Configuración -->
+        <div class="config-panel" id="configPanel">
+            <h3>⚙️ Configuración de Conexión</h3>
+            <div>
+                <span class="connection-status status-disconnected" id="connectionStatus">
+                    ❌ No configurado
+                </span>
+            </div>
+            
+            <div class="form-group">
+                <label>URL de tu Google Apps Script:</label>
+                <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar Configuración</button>
+            <button class="btn btn-warning" onclick="testConnection()">🔌 Probar Conexión</button>
+            
+            <div class="help-text">
+                <strong>📝 Instrucciones de configuración:</strong><br>
+                1. Ve a la pestaña "Configuración" para ver las instrucciones completas<br>
+                2. Copia y pega la URL de tu Google Apps Script aquí<br>
+                3. Haz clic en "Probar Conexión" para verificar
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('scanner')">🔍 Escáner</button>
+            <button class="tab" onclick="showTab('students')">👥 Alumnos</button>
+            <button class="tab" onclick="showTab('records')">📊 Registros</button>
+            <button class="tab" onclick="showTab('reports')">📈 Reportes</button>
+            <button class="tab" onclick="showTab('setup')">⚙️ Configuración</button>
+        </div>
+        
+        <!-- TAB: ESCÁNER -->
+        <div id="scanner" class="tab-content active">
+            <div class="form-group">
+                <label>Tipo de Registro:</label>
+                <select id="recordType" onchange="focusScannerInput()">
+                    <option value="entrada">Entrada</option>
+                    <option value="salida">Salida</option>
+                </select>
+            </div>
+            
+            <div class="scanner-box">
+                <h2>🔍 Escáner Bluetooth Activo</h2>
+                <p style="color: white; font-size: 18px; margin-bottom: 20px;">Escanee el código QR o código de barras del alumno</p>
+                
+                <div class="form-group" style="max-width: 500px; margin: 0 auto;">
+                    <input 
+                        type="text" 
+                        id="bluetoothScanner" 
+                        placeholder="Campo listo para recibir códigos..." 
+                        style="font-size: 24px; text-align: center; padding: 20px; background: white; border: 3px solid #FFD700;"
+                        autocomplete="off"
+                        autofocus>
+                </div>
+                
+                <p style="color: white; margin-top: 15px; opacity: 0.9;">
+                    ⚡ El código se procesará automáticamente después del escaneo
+                </p>
+            </div>
+            
+            <div id="statusMessage"></div>
+            
+            <div class="manual-entry">
+                <h3>O bien, ingrese el código manualmente</h3>
+                <div class="form-group">
+                    <label>Código del Alumno:</label>
+                    <input type="text" id="manualCode" placeholder="Ingrese el código y presione Enter">
+                </div>
+                <button class="btn btn-success" onclick="processManualCode()">✅ Registrar</button>
+            </div>
+        </div>
+        
+        <!-- TAB: ALUMNOS -->
+        <div id="students" class="tab-content">
+            <h2>Gestión de Alumnos</h2>
+            
+            <div class="form-group">
+                <label>Nombre del Alumno:</label>
+                <input type="text" id="studentName" placeholder="Ej: Juan Pérez">
+            </div>
+            
+            <div class="form-group">
+                <label>Código QR/Barras:</label>
+                <input type="text" id="studentCode" placeholder="Ej: ALU001">
+            </div>
+            
+            <div class="form-group">
+                <label>Grado:</label>
+                <input type="text" id="studentGrade" placeholder="Ej: 5to Grado">
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-primary" onclick="addStudent()">➕ Agregar Alumno</button>
+                <button class="btn btn-success" onclick="generateSampleStudents()">🎲 Generar 30 Alumnos de Ejemplo</button>
+                <button class="btn btn-warning" onclick="loadStudents()">🔄 Recargar Lista</button>
+            </div>
+            
+            <div id="studentsList" class="students-grid"></div>
+        </div>
+        
+        <!-- TAB: REGISTROS -->
+        <div id="records" class="tab-content">
+            <h2>Registros de Asistencia</h2>
+            
+            <div class="form-group">
+                <label>Filtrar por Fecha:</label>
+                <input type="date" id="filterDate" onchange="loadRecords()">
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-warning" onclick="loadRecords()">🔄 Recargar Registros</button>
+                <button class="btn btn-success" onclick="exportToCSV()">📥 Exportar a Excel (CSV)</button>
+            </div>
+            
+            <div id="recordsTable"></div>
+        </div>
+        
+        <!-- TAB: REPORTES -->
+        <div id="reports" class="tab-content">
+            <h2>Reportes y Estadísticas</h2>
+            
+            <div class="form-group">
+                <label>Seleccionar Semana:</label>
+                <input type="week" id="weekSelect">
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="generateWeeklyReport()">📊 Generar Reporte</button>
+            </div>
+            
+            <div class="stats-grid" id="statsGrid"></div>
+            
+            <div id="weeklyReport"></div>
+        </div>
+
+        <!-- TAB: CONFIGURACIÓN -->
+        <div id="setup" class="tab-content">
+            <h2>📚 Guía de Configuración Completa</h2>
+            
+            <div class="help-text">
+                <h3>Paso 1: Crear la Hoja de Cálculo en Google Sheets</h3>
+                <ol>
+                    <li>Ve a <a href="https://sheets.google.com" target="_blank">Google Sheets</a></li>
+                    <li>Crea una nueva hoja de cálculo</li>
+                    <li>Nómbrala: "Sistema de Asistencia Escolar"</li>
+                    <li>Crea 2 hojas (pestañas): "Alumnos" y "Registros"</li>
+                </ol>
+            </div>
+
+            <div class="help-text">
+                <h3>Paso 2: Configurar las Hojas</h3>
+                <p><strong>Hoja "Alumnos"</strong> - En la fila 1, escribe estos encabezados:</p>
+                <div class="code-box">
+                    A1: Nombre | B1: Codigo | C1: Grado
+                </div>
+                
+                <p><strong>Hoja "Registros"</strong> - En la fila 1, escribe estos encabezados:</p>
+                <div class="code-box">
+                    A1: Fecha | B1: Hora | C1: Nombre | D1: Codigo | E1: Tipo
+                </div>
+            </div>
+
+            <div class="help-text">
+                <h3>Paso 3: Crear el Script (Apps Script)</h3>
+                <ol>
+                    <li>En tu Google Sheet, ve a <strong>Extensiones → Apps Script</strong></li>
+                    <li>Borra todo el código que aparece</li>
+                    <li>Copia y pega el siguiente código:</li>
+                </ol>
+                
+                <div class="code-box" style="max-height: 400px; overflow-y: auto;">
+function doGet(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet();
+  const action = e.parameter.action;
+  
+  try {
+    if (action === 'getStudents') {
+      return getStudents(sheet);
+    } else if (action === 'addStudent') {
+      return addStudent(sheet, e.parameter);
+    } else if (action === 'deleteStudent') {
+      return deleteStudent(sheet, e.parameter.code);
+    } else if (action === 'getRecords') {
+      return getRecords(sheet, e.parameter.date);
+    } else if (action === 'addRecord') {
+      return addRecord(sheet, e.parameter);
+    } else if (action === 'generateSample') {
+      return generateSampleStudents(sheet);
+    } else if (action === 'test') {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        message: 'Conexión exitosa'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function getStudents(sheet) {
+  const studentSheet = sheet.getSheetByName('Alumnos');
+  const data = studentSheet.getDataRange().getValues();
+  const students = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0]) {
+      students.push({
+        name: data[i][0],
+        code: data[i][1],
+        grade: data[i][2]
+      });
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    data: students
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function addStudent(sheet, params) {
+  const studentSheet = sheet.getSheetByName('Alumnos');
+  studentSheet.appendRow([params.name, params.code, params.grade]);
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    message: 'Alumno agregado'
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function deleteStudent(sheet, code) {
+  const studentSheet = sheet.getSheetByName('Alumnos');
+  const data = studentSheet.getDataRange().getValues();
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][1] === code) {
+      studentSheet.deleteRow(i + 1);
+      break;
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    message: 'Alumno eliminado'
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function getRecords(sheet, filterDate) {
+  const recordSheet = sheet.getSheetByName('Registros');
+  const data = recordSheet.getDataRange().getValues();
+  const records = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0]) {
+      const record = {
+        date: data[i][0],
+        time: data[i][1],
+        studentName: data[i][2],
+        studentCode: data[i][3],
+        type: data[i][4]
+      };
+      
+      if (!filterDate || data[i][0] === filterDate) {
+        records.push(record);
+      }
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    data: records
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function addRecord(sheet, params) {
+  const recordSheet = sheet.getSheetByName('Registros');
+  recordSheet.appendRow([
+    params.date,
+    params.time,
+    params.studentName,
+    params.studentCode,
+    params.type
+  ]);
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    message: 'Registro guardado'
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function generateSampleStudents(sheet) {
+  const studentSheet = sheet.getSheetByName('Alumnos');
+  studentSheet.clear();
+  studentSheet.appendRow(['Nombre', 'Codigo', 'Grado']);
+  
+  const nombres = ['Juan', 'María', 'Pedro', 'Ana', 'Luis', 'Carmen', 'José', 'Laura', 'Carlos', 'Sofía'];
+  const apellidos = ['García', 'Rodríguez', 'Martínez', 'López', 'González', 'Pérez', 'Sánchez', 'Ramírez'];
+  const grados = ['1ero A', '1ero B', '2do A', '2do B', '3ero A'];
+  
+  for (let i = 1; i <= 30; i++) {
+    const nombre = nombres[Math.floor(Math.random() * nombres.length)];
+    const apellido = apellidos[Math.floor(Math.random() * apellidos.length)];
+    const grado = grados[Math.floor(Math.random() * grados.length)];
+    const codigo = 'ALU' + String(i).padStart(3, '0');
+    
+    studentSheet.appendRow([nombre + ' ' + apellido + ' ' + i, codigo, grado]);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    message: '30 alumnos generados'
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+                </div>
+            </div>
+
+            <div class="help-text">
+                <h3>Paso 4: Implementar el Script</h3>
+                <ol>
+                    <li>Haz clic en el botón <strong>"Implementar"</strong> (arriba a la derecha)</li>
+                    <li>Selecciona <strong>"Nueva implementación"</strong></li>
+                    <li>En "Tipo", selecciona <strong>"Aplicación web"</strong></li>
+                    <li>En "Ejecutar como", selecciona <strong>"Yo"</strong></li>
+                    <li>En "Quién tiene acceso", selecciona <strong>"Cualquier persona"</strong></li>
+                    <li>Haz clic en <strong>"Implementar"</strong></li>
+                    <li><strong>¡IMPORTANTE!</strong> Copia la URL que aparece (empieza con https://script.google.com...)</li>
+                    <li>Pega esa URL en el campo de configuración arriba</li>
+                </ol>
+            </div>
+
+            <div class="help-text" style="background: #d4edda; border-left-color: #28a745;">
+                <strong>✅ ¡Listo!</strong> Una vez configurado, todos los datos se guardarán automáticamente en Google Sheets y podrás acceder desde cualquier dispositivo.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let students = [];
+        let attendanceRecords = [];
+        let apiUrl = '';
+
+        // Cargar datos al iniciar
+        window.onload = function() {
+            loadConfig();
+            loadStudents();
+            setTodayDate();
+            setupBluetoothScanner();
+        };
+
+        // Configuración
+        function loadConfig() {
+            const savedUrl = localStorage.getItem('apiUrl');
+            if (savedUrl) {
+                apiUrl = savedUrl;
+                document.getElementById('apiUrl').value = savedUrl;
+                updateConnectionStatus(true);
+            }
+        }
+
+        function saveConfig() {
+            const url = document.getElementById('apiUrl').value.trim();
+            if (!url) {
+                alert('Por favor ingrese la URL del script');
+                return;
+            }
+            
+            apiUrl = url;
+            localStorage.setItem('apiUrl', url);
+            updateConnectionStatus(true);
+            alert('Configuración guardada. Ahora pruebe la conexión.');
+        }
+
+        async function testConnection() {
+            if (!apiUrl) {
+                alert('Por favor configure la URL primero');
+                return;
+            }
+
+            showLoading('Probando conexión...');
+            
+            try {
+                const response = await fetch(apiUrl + '?action=test');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateConnectionStatus(true);
+                    showStatus('✅ Conexión exitosa con Google Sheets', 'success');
+                    loadStudents();
+                } else {
+                    updateConnectionStatus(false);
+                    showStatus('❌ Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                updateConnectionStatus(false);
+                showStatus('❌ Error de conexión: ' + error.message, 'error');
+            }
+        }
+
+        function updateConnectionStatus(isConnected) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (isConnected) {
+                statusEl.className = 'connection-status status-connected';
+                statusEl.innerHTML = '✅ Conectado';
+            } else {
+                statusEl.className = 'connection-status status-disconnected';
+                statusEl.innerHTML = '❌ No conectado';
+            }
+        }
+
+        // API Functions
+        async function apiCall(action, params = {}) {
+            if (!apiUrl) {
+                throw new Error('Configure la URL del script primero');
+            }
+
+            const queryParams = new URLSearchParams({action, ...params});
+            const response = await fetch(`${apiUrl}?${queryParams}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.message || 'Error en la operación');
+            }
+            
+            return data;
+        }
+
+        // Escáner Bluetooth
+        function setupBluetoothScanner() {
+            const scannerInput = document.getElementById('bluetoothScanner');
+            const manualInput = document.getElementById('manualCode');
+            
+            scannerInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const code = scannerInput.value.trim();
+                    if (code) {
+                        processCode(code);
+                        scannerInput.value = '';
+                    }
+                }
+            });
+            
+            manualInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    processManualCode();
+                }
+            });
+            
+            setInterval(() => {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (activeTab && activeTab.id === 'scanner') {
+                    if (document.activeElement !== scannerInput && 
+                        document.activeElement !== manualInput &&
+                        document.activeElement.tagName !== 'SELECT') {
+                        scannerInput.focus();
+                    }
+                }
+            }, 500);
+        }
+
+        function focusScannerInput() {
+            setTimeout(() => {
+                document.getElementById('bluetoothScanner').focus();
+            }, 100);
+        }
+
+        async function processCode(code) {
+            const student = students.find(s => s.code === code);
+            
+            if (!student) {
+                showStatus('❌ Alumno no encontrado: ' + code, 'error');
+                return;
+            }
+            
+            const recordType = document.getElementById('recordType').value;
+            const now = new Date();
+            
+            const record = {
+                date: now.toLocaleDateString('es-MX'),
+                time: now.toLocaleTimeString('es-MX'),
+                studentName: student.name,
+                studentCode: code,
+                type: recordType
+            };
+
+            showLoading('Guardando...');
+            
+            try {
+                await apiCall('addRecord', record);
+                
+                const icon = recordType === 'entrada' ? '🟢' : '🔴';
+                showStatus(`${icon} ${recordType.toUpperCase()} registrada: ${student.name} - ${record.time}`, 'success');
+                
+                setTimeout(() => {
+                    document.getElementById('bluetoothScanner').focus();
+                }, 1500);
+            } catch (error) {
+                showStatus('❌ Error al guardar: ' + error.message, 'error');
+            }
+        }
+
+        function processManualCode() {
+            const code = document.getElementById('manualCode').value.trim();
+            if (!code) {
+                showStatus('Por favor ingrese un código', 'error');
+                return;
+            }
+            processCode(code);
+            document.getElementById('manualCode').value = '';
+        }
+
+        // Gestión de alumnos
+        async function loadStudents() {
+            showLoading('Cargando alumnos...');
+            
+            try {
+                const response = await apiCall('getStudents');
+                students = response.data || [];
+                displayStudents();
+                hideLoading();
+            } catch (error) {
+                showStatus('❌ Error al cargar alumnos: ' + error.message, 'error');
+            }
+        }
+
+        async function addStudent() {
+            const name = document.getElementById('studentName').value.trim();
+            const code = document.getElementById('studentCode').value.trim();
+            const grade = document.getElementById('studentGrade').value.trim();
+            
+            if (!name || !code) {
+                alert('Por favor complete nombre y código');
+                return;
+            }
+            
+            if (students.find(s => s.code === code)) {
+                alert('Ya existe un alumno con ese código');
+                return;
+            }
+
+            showLoading('Agregando alumno...');
+            
+            try {
+                await apiCall('addStudent', {name, code, grade});
+                
+                document.getElementById('studentName').value = '';
+                document.getElementById('studentCode').value = '';
+                document.getElementById('studentGrade').value = '';
+                
+                await loadStudents();
+                showStatus('✅ Alumno agregado exitosamente', 'success');
+            } catch (error) {
+                showStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function generateSampleStudents() {
+            if (!confirm('Esto eliminará los alumnos actuales y generará 30 nuevos. ¿Continuar?')) {
+                return;
+            }
+
+            showLoading('Generando 30 alumnos...');
+            
+            try {
+                await apiCall('generateSample');
+                await loadStudents();
+                showStatus('✅ 30 alumnos generados exitosamente', 'success');
+            } catch (error) {
+                showStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function displayStudents() {
+            const container = document.getElementById('studentsList');
+            if (students.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No hay alumnos registrados</p>';
+                return;
+            }
+            
+            container.innerHTML = students.map(student => `
+                <div class="student-card">
+                    <h3>${student.name}</h3>
+                    <p><strong>Código:</strong> ${student.code}</p>
+                    <p><strong>Grado:</strong> ${student.grade}</p>
+                    <button class="btn btn-danger" onclick="deleteStudent('${student.code}')" style="width: 100%; margin-top: 10px;">Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        async function deleteStudent(code) {
+            if (!confirm('¿Eliminar este alumno?')) return;
+
+            showLoading('Eliminando...');
+            
+            try {
+                await apiCall('deleteStudent', {code});
+                await loadStudents();
+                showStatus('✅ Alumno eliminado', 'success');
+            } catch (error) {
+                showStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Registros
+        async function loadRecords() {
+            const filterDate = document.getElementById('filterDate').value;
+            
+            showLoading('Cargando registros...');
+            
+            try {
+                const response = await apiCall('getRecords', filterDate ? {date: filterDate} : {});
+                attendanceRecords = response.data || [];
+                displayRecords();
+                hideLoading();
+            } catch (error) {
+                showStatus('❌ Error al cargar registros: ' + error.message, 'error');
+            }
+        }
+
+        function displayRecords() {
+            const container = document.getElementById('recordsTable');
+            
+            if (attendanceRecords.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No hay registros para mostrar</p>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Alumno</th>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${attendanceRecords.map(record => `
+                            <tr>
+                                <td>${record.date}</td>
+                                <td>${record.time}</td>
+                                <td>${record.studentName}</td>
+                                <td>${record.studentCode}</td>
+                                <td><strong>${record.type === 'entrada' ? '🟢 ENTRADA' : '🔴 SALIDA'}</strong></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function generateWeeklyReport() {
+            const weekInput = document.getElementById('weekSelect').value;
+            
+            if (!weekInput) {
+                alert('Seleccione una semana primero');
+                return;
+            }
+
+            showLoading('Generando reporte...');
+            
+            try {
+                await loadRecords();
+                
+                const [year, week] = weekInput.split('-W');
+                const weekStart = getDateOfISOWeek(parseInt(week), parseInt(year));
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                
+                const weekRecords = attendanceRecords.filter(record => {
+                    const recordDate = parseDate(record.date);
+                    return recordDate >= weekStart && recordDate <= weekEnd;
+                });
+                
+                const totalRegistros = weekRecords.length;
+                const totalEntradas = weekRecords.filter(r => r.type === 'entrada').length;
+                const totalSalidas = weekRecords.filter(r => r.type === 'salida').length;
+                const alumnosUnicos = new Set(weekRecords.map(r => r.studentCode)).size;
+                
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card">
+                        <h3>${totalRegistros}</h3>
+                        <p>Total de Registros</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${totalEntradas}</h3>
+                        <p>Entradas</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${totalSalidas}</h3>
+                        <p>Salidas</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${alumnosUnicos}</h3>
+                        <p>Alumnos que Asistieron</p>
+                    </div>
+                `;
+                
+                const studentStats = {};
+                students.forEach(student => {
+                    const studentRecords = weekRecords.filter(r => r.studentCode === student.code);
+                    const entradas = studentRecords.filter(r => r.type === 'entrada');
+                    const diasAsistidos = new Set(entradas.map(r => r.date)).size;
+                    
+                    studentStats[student.code] = {
+                        name: student.name,
+                        diasAsistidos: diasAsistidos,
+                        diasAusentes: 5 - diasAsistidos,
+                        totalRegistros: studentRecords.length
+                    };
+                });
+                
+                document.getElementById('weeklyReport').innerHTML = `
+                    <h3>Reporte Detallado por Alumno</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Alumno</th>
+                                <th>Código</th>
+                                <th>Días Asistidos</th>
+                                <th>Días Ausentes</th>
+                                <th>Total Registros</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.entries(studentStats).map(([code, stats]) => `
+                                <tr>
+                                    <td>${stats.name}</td>
+                                    <td>${code}</td>
+                                    <td>${stats.diasAsistidos}</td>
+                                    <td>${stats.diasAusentes}</td>
+                                    <td>${stats.totalRegistros}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                hideLoading();
+            } catch (error) {
+                showStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function exportToCSV() {
+            if (attendanceRecords.length === 0) {
+                alert('No hay registros para exportar');
+                return;
+            }
+            
+            let csv = 'Fecha,Hora,Alumno,Código,Tipo\n';
+            attendanceRecords.forEach(record => {
+                csv += `${record.date},${record.time},${record.studentName},${record.studentCode},${record.type}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `asistencia_${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+        }
+
+        // Utilidades
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'records') {
+                loadRecords();
+            } else if (tabName === 'scanner') {
+                focusScannerInput();
+            }
+        }
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('filterDate').value = today;
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = 'status-box ' + type;
+            statusDiv.innerHTML = message;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showLoading(message) {
+            document.getElementById('statusMessage').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>${message}</p>
+                </div>
+            `;
+            document.getElementById('statusMessage').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('statusMessage').style.display = 'none';
+        }
+
+        function getDateOfISOWeek(week, year) {
+            const simple = new Date(year, 0, 1 + (week - 1) * 7);
+            const dow = simple.getDay();
+            const ISOweekStart = simple;
+            if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+            else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+            return ISOweekStart;
+        }
+
+        function parseDate(dateString) {
+            const parts = dateString.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+    </script>
+</body>
+</html>
