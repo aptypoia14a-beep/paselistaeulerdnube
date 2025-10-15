@@ -1106,27 +1106,50 @@
                 return;
             }
             
-            const sortedRecords = [...filtered].sort((a, b) => b.timestamp - a.timestamp);
+            // Agrupar registros por alumno y fecha
+            const groupedRecords = {};
+            
+            filtered.forEach(record => {
+                const key = `${record.studentCode}_${record.date}`;
+                
+                if (!groupedRecords[key]) {
+                    groupedRecords[key] = {
+                        studentName: record.studentName,
+                        studentCode: record.studentCode,
+                        date: record.date,
+                        entrada: '',
+                        salida: '',
+                        timestamp: record.timestamp
+                    };
+                }
+                
+                if (record.type === 'entrada') {
+                    groupedRecords[key].entrada = record.time;
+                } else if (record.type === 'salida') {
+                    groupedRecords[key].salida = record.time;
+                }
+            });
+            
+            // Convertir a array y ordenar por timestamp (más reciente primero)
+            const sortedRecords = Object.values(groupedRecords).sort((a, b) => b.timestamp - a.timestamp);
             
             container.innerHTML = `
                 <table>
                     <thead>
                         <tr>
-                            <th>Fecha</th>
-                            <th>Hora</th>
                             <th>Alumno</th>
-                            <th>Código</th>
-                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Hora de Entrada</th>
+                            <th>Hora de Salida</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${sortedRecords.map(record => `
                             <tr>
+                                <td><strong>${record.studentName}</strong></td>
                                 <td>${record.date}</td>
-                                <td>${record.time}</td>
-                                <td>${record.studentName}</td>
-                                <td>${record.studentCode}</td>
-                                <td><strong>${record.type === 'entrada' ? '🟢 ENTRADA' : '🔴 SALIDA'}</strong></td>
+                                <td>${record.entrada || '<span style="color: #999;">-</span>'}</td>
+                                <td>${record.salida || '<span style="color: #999;">-</span>'}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -1152,9 +1175,31 @@
                 return;
             }
             
-            let csv = 'Fecha,Hora,Alumno,Código,Tipo\n';
+            // Agrupar registros por alumno y fecha
+            const groupedRecords = {};
+            
             attendanceRecords.forEach(record => {
-                csv += `${record.date},${record.time},${record.studentName},${record.studentCode},${record.type}\n`;
+                const key = `${record.studentCode}_${record.date}`;
+                
+                if (!groupedRecords[key]) {
+                    groupedRecords[key] = {
+                        studentName: record.studentName,
+                        date: record.date,
+                        entrada: '',
+                        salida: ''
+                    };
+                }
+                
+                if (record.type === 'entrada') {
+                    groupedRecords[key].entrada = record.time;
+                } else if (record.type === 'salida') {
+                    groupedRecords[key].salida = record.time;
+                }
+            });
+            
+            let csv = 'Alumno,Fecha,Hora de Entrada,Hora de Salida\n';
+            Object.values(groupedRecords).forEach(record => {
+                csv += `${record.studentName},${record.date},${record.entrada},${record.salida}\n`;
             });
             
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
